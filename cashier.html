@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>كاشير الملتقى - بطاقة الولاء</title>
+<meta name="theme-color" content="#292522">
+<link rel="icon" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="lib/html5-qrcode.min.js"></script>
+<script src="config.js"></script>
+<style>
+  .top{background:var(--ink)}
+  .tabs{display:flex;gap:8px;margin-bottom:16px}
+  .tabs button{flex:1;padding:10px;border-radius:12px;border:1.5px solid var(--line);background:#fff;font:inherit;font-weight:600;color:var(--muted);cursor:pointer}
+  .tabs button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  #reader{border-radius:14px;overflow:hidden;margin-top:12px;background:#000}
+  #reader video{border-radius:14px}
+  .cust-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+  .cust-head .nm{font-size:21px;font-weight:700}
+  .pill{display:inline-block;font-size:12px;padding:3px 10px;border-radius:20px;background:var(--cream-2);color:var(--brown);font-weight:600}
+  .pill.pts{background:#EEF1E8;color:var(--olive)}
+  .kv{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+  .kv div{background:var(--cream);border-radius:12px;padding:9px 12px;font-size:13px;color:var(--muted)}
+  .kv b{display:block;color:var(--ink);font-size:15px}
+  .stamps{gap:7px}
+  .box{border:1.5px solid var(--line);border-radius:16px;padding:14px;margin-top:14px}
+  .box h3{font-size:15px;margin-bottom:2px}
+  .confirm{background:var(--ink)!important}
+  .stat{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .stat div{background:var(--cream);border-radius:14px;padding:14px;text-align:center}
+  .stat b{display:block;font-size:26px;color:var(--coral)}
+</style>
+</head>
+<body>
+<header class="top">
+  <img src="logo-ar.png" alt="الملتقى">
+  <div class="tag">لوحة الكاشير · بطاقة الولاء</div>
+</header>
+
+<main class="wrap">
+
+  <!-- الدخول -->
+  <section class="sheet" id="vLogin">
+    <h1>دخول الكاشير</h1>
+    <p class="sub">اكتب رمز الكاشير واسمك.</p>
+    <label for="lStaff">اسم الموظف</label>
+    <input id="lStaff" maxlength="30" placeholder="مثلاً: أحمد">
+    <label for="lPin">الرمز</label>
+    <input id="lPin" type="password" inputmode="numeric" class="num" maxlength="8">
+    <button class="btn dark" id="bLogin">دخول</button>
+    <div class="err" id="eLogin"></div>
+  </section>
+
+  <!-- الشغل -->
+  <section class="hidden" id="vMain" style="margin-top:-44px">
+    <div class="sheet">
+      <div class="tabs">
+        <button class="on" data-t="tCash">الزبائن</button>
+        <button data-t="tAdmin">الإدارة</button>
+      </div>
+
+      <div id="tCash">
+        <button class="btn" id="bScan" style="margin-top:0">امسح بطاقة الزبون</button>
+        <div id="reader" class="hidden"></div>
+        <button class="btn ghost sm hidden" id="bStop">إيقاف الكاميرا</button>
+        <div class="row" style="margin-top:12px">
+          <input id="q" type="tel" inputmode="numeric" placeholder="رقم الهاتف أو العضوية" style="flex:3">
+          <button class="btn dark sm" id="bFind" style="margin:0;flex:1">بحث</button>
+        </div>
+        <div class="err" id="eFind"></div>
+      </div>
+
+      <div id="tAdmin" class="hidden">
+        <div id="adminLogin">
+          <label for="aPin">رمز الإدارة</label>
+          <input id="aPin" type="password" inputmode="numeric" class="num" maxlength="8">
+          <button class="btn dark" id="bAdmin">دخول</button>
+          <div class="err" id="eAdmin"></div>
+        </div>
+        <div id="adminBody" class="hidden">
+          <div class="stat">
+            <div><b id="sTotal">0</b>مشترك</div>
+            <div><b id="sNew">0</b>جديد هذا الأسبوع</div>
+            <div><b id="sToday">0</b>عملية اليوم</div>
+            <div><b id="sPts">0</b>بنظام النقاط</div>
+          </div>
+          <div class="box">
+            <h3>أعياد الميلاد خلال 7 أيام</h3>
+            <div id="sBdays" class="muted"></div>
+          </div>
+          <div class="box">
+            <h3>إشعار لكل المشتركين</h3>
+            <p class="muted">للعروض والمباريات والمناسبات. لا تكثر، مرة أو مرتين بالأسبوع تكفي.</p>
+            <label for="nTitle">العنوان</label>
+            <input id="nTitle" maxlength="40" placeholder="مثلاً: الليلة الكلاسيكو">
+            <label for="nBody">النص</label>
+            <textarea id="nBody" rows="3" maxlength="180" placeholder="مثلاً: احجز مكانك بالملتقى، الشاشة جاهزة من الساعة 9."></textarea>
+            <button class="btn" id="bSend">أرسل الإشعار</button>
+            <div class="err" id="eSend"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- بيانات الزبون -->
+    <div class="sheet hidden" id="cust" style="margin-top:16px">
+      <div class="cust-head">
+        <div>
+          <div class="nm" id="xName"></div>
+          <div class="muted" id="xId" style="direction:ltr;text-align:right"></div>
+        </div>
+        <span class="pill" id="xPhase"></span>
+      </div>
+      <div class="kv">
+        <div>الهاتف<b id="xPhone" style="direction:ltr;text-align:right"></b></div>
+        <div>الزيارات<b id="xVisits"></b></div>
+        <div>المفضل<b id="xFav"></b></div>
+        <div>آخر زيارة<b id="xLast" style="font-size:13px"></b></div>
+      </div>
+
+      <div id="xBday"></div>
+
+      <!-- مرحلة الأختام -->
+      <div id="xStampsBox" class="box">
+        <h3>الأختام <span id="xStampTxt" class="muted"></span></h3>
+        <div class="stamps" id="xStamps" style="margin-top:10px"></div>
+        <div id="xFreeBox" class="hidden">
+          <button class="btn olive" data-op="redeemFree" data-confirm="1">صرف المشروب المجاني</button>
+        </div>
+        <div id="xStampForm">
+          <label>المشروب (اختياري)</label>
+          <input list="drinks" class="drink" placeholder="اكتب أو اختار">
+          <label>مبلغ الفاتورة (اختياري)</label>
+          <input class="num amount" inputmode="numeric" placeholder="مثلاً 6000">
+          <button class="btn" data-op="stamp" id="bStamp">أضف ختم</button>
+          <div class="muted" id="xCool" style="text-align:center;margin-top:6px"></div>
+        </div>
+      </div>
+
+      <!-- مرحلة النقاط -->
+      <div id="xPointsBox" class="box hidden">
+        <h3>النقاط: <span id="xPts" style="color:var(--coral)"></span></h3>
+        <label>مبلغ الفاتورة</label>
+        <input class="num amount" id="ptsAmount" inputmode="numeric" placeholder="مثلاً 8000">
+        <div class="muted" id="ptsPreview"></div>
+        <label>المشروب (اختياري)</label>
+        <input list="drinks" class="drink" placeholder="اكتب أو اختار">
+        <button class="btn" data-op="addPoints">أضف النقاط</button>
+        <div id="xRewards" style="margin-top:10px"></div>
+      </div>
+
+      <button class="link" id="bClear">زبون جديد</button>
+    </div>
+  </section>
+
+  <datalist id="drinks"></datalist>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+let PIN = sessionStorage.getItem('mq_pin') || '';
+let STAFF = localStorage.getItem('mq_staff') || '';
+let ADMIN = '';
+let cur = null, rewards = [], pointsPer1000 = 1, scanner = null;
+
+function toast(msg, bad){ const t=$('toast'); t.textContent=msg; t.className='toast show'+(bad?' bad':''); clearTimeout(t._h); t._h=setTimeout(()=>t.className='toast',3500); }
+function digits(s){ return String(s||'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[^\d]/g,''); }
+function money(n){ return Number(n||0).toLocaleString('en'); }
+function esc(s){ const d=document.createElement('div'); d.textContent=s==null?'':s; return d.innerHTML; }
+async function busy(btn, fn){ const l=btn.innerHTML; btn.disabled=true; btn.innerHTML='<span class="spinner"></span>'; try{ return await fn(); } finally { btn.disabled=false; btn.innerHTML=l; } }
+
+/* ---------- الدخول ---------- */
+$('lStaff').value = STAFF;
+$('bLogin').onclick = () => busy($('bLogin'), async () => {
+  $('eLogin').textContent='';
+  const staff = $('lStaff').value.trim(), pin = digits($('lPin').value);
+  if (!staff) return $('eLogin').textContent='اكتب اسمك';
+  const r = await mqApi({ action:'login', pin });
+  if (!r.ok) return $('eLogin').textContent = r.error;
+  PIN = pin; STAFF = staff;
+  sessionStorage.setItem('mq_pin', pin); localStorage.setItem('mq_staff', staff);
+  start(r);
+});
+async function autoLogin(){
+  if (!PIN) return;
+  const r = await mqApi({ action:'login', pin:PIN });
+  if (r.ok) start(r); else { sessionStorage.removeItem('mq_pin'); PIN=''; }
+}
+function start(r){
+  rewards = r.rewards || [];
+  $('drinks').innerHTML = (r.drinks||[]).map(d => '<option value="'+esc(d)+'">').join('');
+  $('vLogin').classList.add('hidden'); $('vMain').classList.remove('hidden');
+}
+
+/* ---------- التبويبات ---------- */
+document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('.tabs button').forEach(x => x.classList.toggle('on', x === b));
+  ['tCash','tAdmin'].forEach(t => $(t).classList.toggle('hidden', t !== b.dataset.t));
+  $('cust').classList.toggle('hidden', b.dataset.t !== 'tCash' || !cur);
+  if (b.dataset.t !== 'tCash') stopScan();
+});
+
+/* ---------- المسح والبحث ---------- */
+$('bScan').onclick = async () => {
+  if (!window.Html5Qrcode) return toast('مكتبة الكاميرا ما اشتغلت، استخدم البحث بالرقم', true);
+  $('reader').classList.remove('hidden'); $('bStop').classList.remove('hidden'); $('bScan').classList.add('hidden');
+  scanner = scanner || new Html5Qrcode('reader');
+  try {
+    await scanner.start({ facingMode:'environment' }, { fps:10, qrbox:{ width:220, height:220 } }, txt => { stopScan(); find(txt); });
+  } catch (e) { stopScan(); toast('ما كدرنا نفتح الكاميرا. اسمح بالكاميرا أو ابحث بالرقم', true); }
+};
+$('bStop').onclick = stopScan;
+function stopScan(){
+  if (scanner && scanner.isScanning) scanner.stop().catch(()=>{});
+  $('reader').classList.add('hidden'); $('bStop').classList.add('hidden'); $('bScan').classList.remove('hidden');
+}
+$('bFind').onclick = () => find($('q').value);
+$('q').onkeydown = e => { if (e.key === 'Enter') find($('q').value); };
+
+async function find(q){
+  $('eFind').textContent='';
+  q = String(q||'').trim();
+  if (!q) return $('eFind').textContent='اكتب رقم الهاتف أو امسح البطاقة';
+  const r = await busy($('bFind'), () => mqApi({ action:'lookup', pin:PIN, q }));
+  if (!r.ok) { if (r.code==='BAD_PIN'||r.code==='LOCKED') return relogin(r.error); $('cust').classList.add('hidden'); cur=null; return $('eFind').textContent = r.error; }
+  showCust(r.customer);
+  $('q').value='';
+}
+function relogin(msg){ sessionStorage.removeItem('mq_pin'); PIN=''; $('vMain').classList.add('hidden'); $('vLogin').classList.remove('hidden'); $('eLogin').textContent=msg; }
+
+/* ---------- عرض الزبون ---------- */
+function showCust(c){
+  cur = c;
+  pointsPer1000 = c.pointsPer1000 || 1;
+  $('cust').classList.remove('hidden');
+  $('xName').textContent = c.name; $('xId').textContent = c.id;
+  $('xPhone').textContent = c.phone; $('xVisits').textContent = c.visits;
+  $('xFav').textContent = c.fav || '—'; $('xLast').textContent = c.lastVisit || 'أول زيارة';
+  const isStamps = c.phase !== 'points';
+  $('xPhase').textContent = isStamps ? 'أختام' : 'نقاط';
+  $('xPhase').className = 'pill' + (isStamps ? '' : ' pts');
+  $('xStampsBox').classList.toggle('hidden', !isStamps);
+  $('xPointsBox').classList.toggle('hidden', isStamps);
+  document.querySelectorAll('#cust input').forEach(i => i.value = '');
+  $('ptsPreview').textContent = '';
+
+  if (isStamps) {
+    let h=''; for (let i=1;i<=c.goal;i++) h += '<div class="st'+(i<=c.stamps?' on':'')+'">'+(i<=c.stamps?'✓':i)+'</div>';
+    h += '<div class="st free'+(c.freeReady?' ready':'')+'">مجاني</div>';
+    $('xStamps').innerHTML = h;
+    $('xStampTxt').textContent = c.stamps + ' / ' + c.goal;
+    $('xFreeBox').classList.toggle('hidden', !c.freeReady);
+    $('xStampForm').classList.toggle('hidden', c.freeReady);
+    $('bStamp').disabled = c.cooldownMin > 0;
+    $('xCool').textContent = c.cooldownMin > 0 ? 'انضاف ختم قبل شوية، الختم الجاي بعد ' + (c.cooldownMin>=60 ? Math.floor(c.cooldownMin/60)+' ساعة'+(c.cooldownMin%60?' و'+(c.cooldownMin%60)+' دقيقة':'') : c.cooldownMin+' دقيقة') : '';
+  } else {
+    $('xPts').textContent = money(c.points);
+    $('xRewards').innerHTML = (c.rewards||rewards).map(r =>
+      '<button class="btn sm '+(c.points>=r.points?'olive':'ghost')+'" data-op="redeemPoints" data-reward="'+r.i+'" data-confirm="1" '+(c.points>=r.points?'':'disabled')+'>استبدال: '+esc(r.name)+' ('+r.points+' نقطة)</button>'
+    ).join('');
+  }
+
+  // عيد الميلاد
+  const b = c.birthday; let bh = '';
+  if (b && b.available) {
+    bh = '<div class="box" style="border-color:var(--coral)"><h3 style="color:var(--coral)">هدية عيد الميلاد: خصم '+b.percent+'%</h3>'
+       + '<div class="muted">'+(b.isToday?'عيد ميلاده اليوم':b.daysUntil>0?'عيد ميلاده بعد '+b.daysUntil+' يوم':'عيد ميلاده قبل '+(-b.daysUntil)+' يوم')+' · صالحة لغاية '+b.validUntil+'</div>'
+       + '<label>مبلغ الفاتورة قبل الخصم</label><input class="num amount" id="bdAmount" inputmode="numeric" placeholder="مثلاً 12000">'
+       + '<div class="muted" id="bdPreview"></div>'
+       + '<button class="btn" data-op="redeemBirthday" data-confirm="1">طبّق خصم الميلاد</button></div>';
+  } else if (b && b.used && b.inWindow) {
+    bh = '<div class="banner ok">هدية الميلاد استُخدمت هذي السنة.</div>';
+  }
+  $('xBday').innerHTML = bh;
+  if ($('bdAmount')) $('bdAmount').oninput = e => {
+    const a = Number(digits(e.target.value)); const d = Math.round(a*b.percent/100/250)*250;
+    $('bdPreview').textContent = a ? 'الخصم تقريباً '+money(d)+' · يدفع '+money(a-d) : '';
+  };
+  $('cust').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+$('ptsAmount').oninput = e => {
+  const a = Number(digits(e.target.value));
+  $('ptsPreview').textContent = a ? 'راح تنضاف ' + Math.floor(a/1000*pointsPer1000) + ' نقطة' : '';
+};
+
+/* ---------- العمليات ---------- */
+document.addEventListener('click', async e => {
+  const btn = e.target.closest('[data-op]');
+  if (!btn || !cur) return;
+  // تأكيد بضغطتين للعمليات الحساسة
+  if (btn.dataset.confirm && !btn.dataset.armed) {
+    btn.dataset.armed = '1'; btn._txt = btn.innerHTML; btn.innerHTML = 'اضغط مرة ثانية للتأكيد'; btn.classList.add('confirm');
+    setTimeout(() => { if (btn.isConnected) { delete btn.dataset.armed; btn.innerHTML = btn._txt; btn.classList.remove('confirm'); } }, 4000);
+    return;
+  }
+  delete btn.dataset.armed; if (btn._txt) { btn.innerHTML = btn._txt; btn.classList.remove('confirm'); }
+  const scope = btn.closest('.box') || $('cust');
+  const amountEl = scope.querySelector('.amount'), drinkEl = scope.querySelector('.drink');
+  const req = { action:btn.dataset.op, pin:PIN, staff:STAFF, id:cur.id,
+    amount: amountEl ? digits(amountEl.value) : '', drink: drinkEl ? drinkEl.value.trim() : '', reward: btn.dataset.reward };
+  if ((req.action==='addPoints' || req.action==='redeemBirthday') && !req.amount) return toast('اكتب مبلغ الفاتورة', true);
+  const r = await busy(btn, () => mqApi(req));
+  if (!r.ok) { if (r.code==='BAD_PIN'||r.code==='LOCKED') return relogin(r.error); return toast(r.error, true); }
+  toast(r.message);
+  showCust(r.customer);
+});
+
+$('bClear').onclick = () => { cur=null; $('cust').classList.add('hidden'); window.scrollTo({top:0,behavior:'smooth'}); };
+
+/* ---------- الإدارة ---------- */
+$('bAdmin').onclick = () => busy($('bAdmin'), async () => {
+  $('eAdmin').textContent='';
+  const pin = digits($('aPin').value);
+  const r = await mqApi({ action:'adminStats', adminPin:pin });
+  if (!r.ok) return $('eAdmin').textContent = r.error;
+  ADMIN = pin; $('adminLogin').classList.add('hidden'); $('adminBody').classList.remove('hidden');
+  $('sTotal').textContent = r.total; $('sNew').textContent = r.newWeek; $('sToday').textContent = r.visitsToday; $('sPts').textContent = r.pointsMembers;
+  $('sBdays').innerHTML = r.birthdays.length ? r.birthdays.map(b => '<div class="rw"><span>'+esc(b.name)+'</span><b>'+b.date.split('-').reverse().join('/')+(b.used?' · استخدمها':'')+'</b></div>').join('') : 'ماكو أعياد ميلاد قريبة';
+});
+$('bSend').onclick = async () => {
+  $('eSend').textContent='';
+  const title = $('nTitle').value.trim(), body = $('nBody').value.trim();
+  if (!title || !body) return $('eSend').textContent='اكتب العنوان والنص';
+  if (!confirm('راح يوصل الإشعار لكل المشتركين. متأكد؟')) return;
+  const r = await busy($('bSend'), () => mqApi({ action:'broadcast', adminPin:ADMIN, title, body }));
+  if (r.ok) { toast(r.message); $('nTitle').value=''; $('nBody').value=''; } else $('eSend').textContent = r.error;
+};
+
+autoLogin();
+</script>
+</body>
+</html>

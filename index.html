@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>بطاقة الملتقى</title>
+<meta name="theme-color" content="#92735E">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="الملتقى">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="lib/qrcode.js"></script>
+<script src="config.js"></script>
+</head>
+<body>
+<header class="top">
+  <img src="logo-ar.png" alt="الملتقى">
+  <div class="tag">حيث القهوة والموسيقى واللقاء</div>
+</header>
+
+<main class="wrap">
+
+  <!-- تحميل -->
+  <section class="sheet" id="vLoading" style="text-align:center;padding:40px">
+    <span class="spinner" style="border-color:#E9DCCB;border-top-color:#92735E"></span>
+  </section>
+
+  <!-- التسجيل -->
+  <section class="sheet hidden" id="vReg">
+    <h1>بطاقة الملتقى</h1>
+    <p class="sub">سجّل مرة وحدة وخذ بطاقتك: كل 9 أختام العاشر علينا، وبعيد ميلادك هدية تنتظرك.</p>
+    <form id="fReg" novalidate>
+      <label for="rName">الاسم</label>
+      <input id="rName" autocomplete="name" maxlength="40" placeholder="اسمك الكامل">
+      <label for="rPhone">رقم الهاتف</label>
+      <input id="rPhone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="07xxxxxxxxx" maxlength="14">
+      <label for="rBirth">تاريخ الميلاد</label>
+      <input id="rBirth" type="date">
+      <div class="check">
+        <input type="checkbox" id="rConsent" checked>
+        <span>أوافق يوصلني من الملتقى إشعارات بالعروض وهدية عيد الميلاد</span>
+      </div>
+      <button class="btn" type="submit" id="bReg">سجّل وخذ بطاقتك</button>
+      <div class="err" id="eReg"></div>
+    </form>
+    <button class="link" onclick="show('vRestore')">عندك بطاقة؟ استرجعها</button>
+  </section>
+
+  <!-- الاسترجاع -->
+  <section class="sheet hidden" id="vRestore">
+    <h1>استرجاع البطاقة</h1>
+    <p class="sub">اكتب الرقم وتاريخ الميلاد اللي سجلت بيهم.</p>
+    <form id="fRes" novalidate>
+      <label for="sPhone">رقم الهاتف</label>
+      <input id="sPhone" type="tel" inputmode="numeric" placeholder="07xxxxxxxxx" maxlength="14">
+      <label for="sBirth">تاريخ الميلاد</label>
+      <input id="sBirth" type="date">
+      <button class="btn dark" type="submit" id="bRes">استرجع بطاقتي</button>
+      <div class="err" id="eRes"></div>
+    </form>
+    <button class="link" onclick="show('vReg')">ما عندي بطاقة، أريد أسجل</button>
+  </section>
+
+  <!-- البطاقة -->
+  <section class="hidden" id="vCard" style="margin-top:-44px">
+    <div class="mcard">
+      <div class="head">
+        <img src="logo-ar.png" alt="الملتقى">
+        <span class="lvl" id="cLvl"></span>
+      </div>
+      <div>
+        <div class="nm" id="cName"></div>
+        <div class="id" id="cId"></div>
+      </div>
+    </div>
+
+    <div id="cBday"></div>
+
+    <div class="sheet section" style="margin-top:18px">
+      <div id="cStampsBox">
+        <h2>أختامك</h2>
+        <div class="stamps" id="cStamps"></div>
+        <div class="progress-txt" id="cProg"></div>
+      </div>
+      <div id="cPointsBox" class="hidden">
+        <div class="points">
+          <div class="muted">رصيد نقاطك</div>
+          <div class="big" id="cPts">0</div>
+          <div class="muted" id="cPtsRule"></div>
+        </div>
+        <div id="cRewards" style="margin-top:12px"></div>
+      </div>
+    </div>
+
+    <div class="sheet section" style="margin-top:18px">
+      <div class="qrbox">
+        <div id="qr"></div>
+        <div class="muted" style="margin-top:8px">خلّي الكاشير يمسح الكود مع كل طلب</div>
+      </div>
+    </div>
+
+    <div id="cPush" class="banner info hidden"></div>
+    <div id="cInstall" class="banner info hidden"></div>
+
+    <div class="sheet section" style="margin-top:18px">
+      <div class="rw"><span>المشروب اللي تحبه</span><b id="cFav">—</b></div>
+      <div class="rw"><span>عدد زياراتك</span><b id="cVisits">0</b></div>
+      <div class="rw"><span>تاريخ ميلادك</span><b id="cBirth" style="direction:ltr"></b></div>
+      <div id="cEditBirth" class="hidden">
+        <button class="link" onclick="toggleEdit()">تصحيح تاريخ الميلاد (مرة وحدة فقط)</button>
+        <div id="editBox" class="hidden">
+          <input id="eBirth" type="date">
+          <button class="btn sm dark" onclick="saveBirth()">احفظ</button>
+          <div class="err" id="eEdit"></div>
+        </div>
+      </div>
+    </div>
+
+    <button class="link" onclick="logout()" style="color:var(--muted);font-weight:400;font-size:13px">مو بطاقتك؟ اطلع من الحساب</button>
+  </section>
+
+  <div class="foot">ALMULTAQA CAFE · خليك ويانا</div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const CFG = window.MQ_CONFIG;
+let card = null;
+const CUP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg>';
+
+function show(v){ ['vLoading','vReg','vRestore','vCard'].forEach(x => $(x).classList.toggle('hidden', x !== v)); window.scrollTo(0,0); }
+function toast(msg, bad){ const t=$('toast'); t.textContent=msg; t.className='toast show'+(bad?' bad':''); clearTimeout(t._h); t._h=setTimeout(()=>t.className='toast',3200); }
+function busy(btn, on, label){ btn.disabled=on; if(on){btn._l=btn.textContent; btn.innerHTML='<span class="spinner"></span>';} else btn.textContent=label||btn._l; }
+function digits(s){ return String(s||'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)); }
+const today = new Date().toISOString().slice(0,10);
+['rBirth','sBirth','eBirth'].forEach(id => $(id).max = today);
+
+/* ---------- التسجيل والاسترجاع ---------- */
+$('fReg').onsubmit = async e => {
+  e.preventDefault(); $('eReg').textContent='';
+  const d = { action:'register', name:$('rName').value.trim(), phone:digits($('rPhone').value), birth:$('rBirth').value, consent:$('rConsent').checked };
+  if (d.name.length < 2) return $('eReg').textContent='اكتب اسمك';
+  if (!/^0?7\d{9}$/.test(d.phone.replace(/\D/g,'').replace(/^964/,''))) return $('eReg').textContent='رقم الهاتف غير صحيح';
+  if (!d.birth) return $('eReg').textContent='اختار تاريخ ميلادك';
+  busy($('bReg'), true);
+  const r = await mqApi(d);
+  busy($('bReg'), false);
+  if (r.ok) { saveToken(r.token); render(r.card); toast('أهلاً بيك بالملتقى، بطاقتك جاهزة'); }
+  else if (r.code === 'EXISTS') { $('sPhone').value=$('rPhone').value; $('sBirth').value=$('rBirth').value; show('vRestore'); $('eRes').textContent=r.error; }
+  else $('eReg').textContent = r.error;
+};
+
+$('fRes').onsubmit = async e => {
+  e.preventDefault(); $('eRes').textContent='';
+  busy($('bRes'), true);
+  const r = await mqApi({ action:'restore', phone:digits($('sPhone').value), birth:$('sBirth').value });
+  busy($('bRes'), false);
+  if (r.ok) { saveToken(r.token); render(r.card); toast('رجعت بطاقتك'); }
+  else $('eRes').textContent = r.error;
+};
+
+function saveToken(t){ try{ localStorage.setItem('mq_token', t); }catch(e){} }
+function getToken(){ try{ return localStorage.getItem('mq_token'); }catch(e){ return null; } }
+function logout(){ if(!confirm('أكيد تريد تطلع؟ تكدر ترجعها برقمك وتاريخ ميلادك.')) return; localStorage.removeItem('mq_token'); card=null; show('vReg'); }
+
+async function loadCard(silent){
+  const t = getToken();
+  if (!t) return show('vReg');
+  if (!silent && !card) show('vLoading');
+  const r = await mqApi({ action:'card', token:t });
+  if (r.ok) render(r.card);
+  else if (r.code === 'NO_CARD') { localStorage.removeItem('mq_token'); show('vReg'); }
+  else if (!card) { show('vReg'); $('eReg').textContent = r.error; }
+}
+
+/* ---------- عرض البطاقة ---------- */
+function fmtDM(ymd){ const p=ymd.split('-'); return p[2]+'/'+p[1]; }
+
+function render(c){
+  const first = !card;
+  card = c;
+  $('cName').textContent = c.name;
+  $('cId').textContent = c.id;
+  $('cLvl').textContent = c.phase === 'points' ? 'عضو نقاط' : 'بطاقة الأختام';
+  $('cFav').textContent = c.fav || '—';
+  $('cVisits').textContent = c.visits;
+  $('cBirth').textContent = c.birth || '';
+  $('cEditBirth').classList.toggle('hidden', !c.canEditBirth);
+
+  // الأختام
+  const isStamps = c.phase !== 'points';
+  $('cStampsBox').classList.toggle('hidden', !isStamps);
+  $('cPointsBox').classList.toggle('hidden', isStamps);
+  if (isStamps) {
+    let h = '';
+    for (let i = 1; i <= c.goal; i++) h += i <= c.stamps ? '<div class="st on">'+CUP+'</div>' : '<div class="st">'+i+'</div>';
+    h += '<div class="st free'+(c.freeReady?' ready':'')+'">مجاني</div>';
+    $('cStamps').innerHTML = h;
+    const left = c.goal - c.stamps;
+    $('cProg').innerHTML = c.freeReady ? '<b>مشروبك المجاني جاهز</b>، بلّغ الكاشير بطلبك الجاي'
+      : c.stamps === 0 ? 'أول ختم ينضاف مع أول طلب'
+      : 'باقيلك <b>'+left+'</b> '+(left===1?'ختم':'أختام')+' وتشرب العاشر علينا';
+  } else {
+    $('cPts').textContent = c.points.toLocaleString('en');
+    $('cPtsRule').textContent = 'كل 1,000 دينار = '+c.pointsPer1000+' '+(c.pointsPer1000===1?'نقطة':'نقاط');
+    $('cRewards').innerHTML = c.rewards.map(r => {
+      const pct = Math.min(100, Math.round(c.points / r.points * 100));
+      const ok = c.points >= r.points;
+      return '<div class="rw" style="display:block"><div style="display:flex;justify-content:space-between"><span>'+esc(r.name)+'</span><b style="color:'+(ok?'var(--olive)':'var(--muted)')+'">'+(ok?'جاهزة':r.points+' نقطة')+'</b></div><div class="bar"><i style="width:'+pct+'%"></i></div></div>';
+    }).join('');
+  }
+
+  // عيد الميلاد
+  const b = c.birthday; let bh = '';
+  if (b && b.available) {
+    const when = b.isToday ? 'كل عام وانت بخير، اليوم عيد ميلادك'
+      : b.daysUntil > 0 ? 'عيد ميلادك بعد '+days(b.daysUntil)
+      : 'عيد ميلادك كان قبل '+days(-b.daysUntil)+'، وهديتك بعدها موجودة';
+    bh = '<div class="banner bday"><b>'+when+'</b>هديتك خصم '+b.percent+'% على طلبك، صالحة لغاية '+fmtDM(b.validUntil)+'. بلّغ الكاشير قبل الحساب.</div>';
+  } else if (b && b.used && b.inWindow) {
+    bh = '<div class="banner ok">استخدمت هدية عيد ميلادك هذي السنة. كل عام وانت بخير.</div>';
+  }
+  $('cBday').innerHTML = bh;
+
+  // QR
+  if (first || $('qr').dataset.id !== c.id) {
+    $('qr').innerHTML = ''; $('qr').dataset.id = c.id;
+    $('qr').innerHTML = qrSvg('ALMQ:'+c.id, 190) + '<div style="font-weight:700;letter-spacing:2px;margin-top:6px;direction:ltr">'+c.id+'</div>';
+  }
+  show('vCard');
+  pushLogin();
+  pushUI();
+}
+function qrSvg(text, size){
+  if (!window.qrcode) return '';
+  const q = qrcode(0, 'M'); q.addData(text); q.make();
+  return q.createSvgTag({ cellSize:5, margin:0, scalable:true })
+    .replace('<svg ', '<svg width="'+size+'" height="'+size+'" ')
+    .replace('fill="white"', 'fill="#FEF9EE"').replace('fill="black"', 'fill="#292522"');
+}
+function days(n){ return n===1?'يوم واحد':n===2?'يومين':n<=10?n+' أيام':n+' يوم'; }
+function esc(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+/* ---------- تعديل الميلاد ---------- */
+function toggleEdit(){ $('editBox').classList.toggle('hidden'); $('eBirth').value = card.birth; }
+async function saveBirth(){
+  const v = $('eBirth').value;
+  if (!v || v === card.birth) return $('eEdit').textContent='اختار التاريخ الصحيح';
+  if (!confirm('التعديل مسموح مرة وحدة فقط. متأكد إن '+v+' هو تاريخ ميلادك؟')) return;
+  const r = await mqApi({ action:'updateBirth', token:getToken(), birth:v });
+  if (r.ok) { render(r.card); toast('انحفظ التاريخ'); } else $('eEdit').textContent = r.error;
+}
+
+/* ---------- الإشعارات (OneSignal) ---------- */
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+let OS = null;
+
+if (CFG.ONESIGNAL_APP_ID) {
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  const s = document.createElement('script');
+  s.src = 'https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js'; s.defer = true;
+  document.head.appendChild(s);
+  const base = location.pathname.replace(/[^/]*$/, '');
+  OneSignalDeferred.push(async function (OneSignal) {
+    try {
+      await OneSignal.init({
+        appId: CFG.ONESIGNAL_APP_ID,
+        serviceWorkerPath: base.slice(1) + 'OneSignalSDKWorker.js',
+        serviceWorkerParam: { scope: base },
+        allowLocalhostAsSecureOrigin: true
+      });
+      OS = OneSignal;
+      OneSignal.Notifications.addEventListener('permissionChange', pushUI);
+      pushLogin(); pushUI();
+    } catch (e) { console.warn(e); }
+  });
+}
+
+function pushLogin(){ if (OS && card) { try { OS.login(card.id); } catch(e){} } }
+
+function pushUI(){
+  const box = $('cPush');
+  if (!CFG.ONESIGNAL_APP_ID || !card) return box.classList.add('hidden');
+  box.classList.remove('hidden');
+  if (isIOS && !standalone) {
+    box.innerHTML = '<b>حتى توصلك الهدايا والعروض بالآيفون</b><br>اضغط زر المشاركة بأسفل Safari، واختار «إضافة إلى الشاشة الرئيسية»، وبعدها افتح البطاقة من أيقونة الملتقى.';
+    return;
+  }
+  if (!('Notification' in window)) { box.innerHTML = 'متصفحك ما يدعم الإشعارات. جرّب Chrome.'; return; }
+  if (Notification.permission === 'granted') { box.className='banner ok'; box.innerHTML = 'الإشعارات مفعّلة، راح توصلك هديتك وعروضنا أول بأول.'; return; }
+  if (Notification.permission === 'denied') { box.innerHTML = 'الإشعارات مسدودة. فعّلها من إعدادات المتصفح للموقع حتى توصلك هديتك.'; return; }
+  box.className = 'banner info';
+  box.innerHTML = '<b>فعّل الإشعارات</b><br>حتى توصلك هدية عيد ميلادك وعروض الملتقى.<button class="btn sm" id="bPush">فعّل الإشعارات</button>';
+  $('bPush').onclick = async () => {
+    if (!OS) return toast('لحظة، جاري التحميل وجرب مرة ثانية');
+    try { await OS.Notifications.requestPermission(); await OS.User.PushSubscription.optIn(); } catch(e){}
+    pushUI();
+  };
+}
+
+/* ---------- تثبيت التطبيق بالأندرويد ---------- */
+let installEvt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault(); installEvt = e;
+  const box = $('cInstall'); box.classList.remove('hidden');
+  box.innerHTML = '<b>خلّي البطاقة بشاشتك الرئيسية</b><br>تفتحها بضغطة وحدة مثل التطبيق.<button class="btn sm olive" id="bInst">أضف البطاقة</button>';
+  $('bInst').onclick = async () => { installEvt.prompt(); await installEvt.userChoice; box.classList.add('hidden'); };
+});
+
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && card) loadCard(true); });
+loadCard();
+</script>
+</body>
+</html>
