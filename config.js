@@ -3,7 +3,7 @@ window.MQ_CONFIG = {
   // رابط Web App من Apps Script (ينتهي بـ /exec)
   API_URL: 'https://script.google.com/macros/s/AKfycbwXyGBItIM0JaiOx_xdyyByhoT5qT5v9nCYa7ceFrGkEzvzs4Vtfpt0AQOov8wrigHPNw/exec',
   // App ID من OneSignal (اتركه فارغ إذا بعدك ما فعّلت الإشعارات)
-  ONESIGNAL_APP_ID: ''
+  ONESIGNAL_APP_ID: '9b86c9a4-6d36-4bef-9d02-a271b7afe605'
 };
 
 window.mqApi = async function (data) {
